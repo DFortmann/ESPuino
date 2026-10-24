@@ -943,24 +943,24 @@ WebsocketCodeType JSONToSettings(JsonObject doc) {
 	if (doc["buttons"].is<JsonObject>()) {
 		// buttons
 		JsonObject buttonsObj = doc["buttons"];
-		bool success = (gPrefsSettings.putUChar("btnShort0", buttonsObj["short0"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnShort1", buttonsObj["short1"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnShort2", buttonsObj["short2"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnShort3", buttonsObj["short3"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnShort4", buttonsObj["short4"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnShort5", buttonsObj["short5"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnLong0", buttonsObj["long0"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnLong1", buttonsObj["long1"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnLong2", buttonsObj["long2"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnLong3", buttonsObj["long3"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnLong4", buttonsObj["long4"].as<uint8_t>()) != 0);
-		success = success && (gPrefsSettings.putUChar("btnLong5", buttonsObj["long5"].as<uint8_t>()) != 0);
-		for (uint8_t i = 0; i < 6; i++) { // "hold button + turn encoder" gestures
-			char keyCw[12], keyCcw[13], jsonCw[10], jsonCcw[11];
+		bool success = true;
+		for (uint8_t i = 0; i < BUTTON_COUNT; i++) { // short/long press + "hold button + turn encoder" gestures
+			char keyShort[12], keyLong[11], keyCw[12], keyCcw[13], jsonShort[10], jsonLong[9], jsonCw[10], jsonCcw[11];
+			snprintf(keyShort, sizeof(keyShort), "btnShort%u", i);
+			snprintf(keyLong, sizeof(keyLong), "btnLong%u", i);
 			snprintf(keyCw, sizeof(keyCw), "btnRotCw%u", i);
 			snprintf(keyCcw, sizeof(keyCcw), "btnRotCcw%u", i);
+			snprintf(jsonShort, sizeof(jsonShort), "short%u", i);
+			snprintf(jsonLong, sizeof(jsonLong), "long%u", i);
 			snprintf(jsonCw, sizeof(jsonCw), "rotCw%u", i);
 			snprintf(jsonCcw, sizeof(jsonCcw), "rotCcw%u", i);
+			// guarded: an older cached web-UI page doesn't send the additional buttons yet
+			if (buttonsObj[jsonShort].is<uint8_t>()) {
+				success = success && (gPrefsSettings.putUChar(keyShort, buttonsObj[jsonShort].as<uint8_t>()) != 0);
+			}
+			if (buttonsObj[jsonLong].is<uint8_t>()) {
+				success = success && (gPrefsSettings.putUChar(keyLong, buttonsObj[jsonLong].as<uint8_t>()) != 0);
+			}
 			if (buttonsObj[jsonCw].is<uint8_t>()) {
 				success = success && (gPrefsSettings.putUChar(keyCw, buttonsObj[jsonCw].as<uint8_t>()) != 0);
 			}
@@ -1377,27 +1377,21 @@ static void settingsToJSON(JsonObject obj, const String section) {
 	if ((section == "") || (section == "buttons")) {
 		// button settings
 		JsonObject buttonsObj = obj["buttons"].to<JsonObject>();
-		for (uint8_t i = 0; i < 6; i++) { // "hold button + turn encoder" gestures
-			char keyCw[12], keyCcw[13], jsonCw[10], jsonCcw[11];
-			snprintf(keyCw, sizeof(keyCw), "btnRotCw%u", i);
-			snprintf(keyCcw, sizeof(keyCcw), "btnRotCcw%u", i);
+		JsonArray enabledArr = buttonsObj["enabled"].to<JsonArray>(); // lets the web-UI hide buttons that aren't connected
+		for (uint8_t i = 0; i < BUTTON_COUNT; i++) { // short/long press + "hold button + turn encoder" gestures
+			char keyShort[12], keyLong[11], jsonShort[10], jsonLong[9], jsonCw[10], jsonCcw[11];
+			snprintf(keyShort, sizeof(keyShort), "btnShort%u", i);
+			snprintf(keyLong, sizeof(keyLong), "btnLong%u", i);
+			snprintf(jsonShort, sizeof(jsonShort), "short%u", i);
+			snprintf(jsonLong, sizeof(jsonLong), "long%u", i);
 			snprintf(jsonCw, sizeof(jsonCw), "rotCw%u", i);
 			snprintf(jsonCcw, sizeof(jsonCcw), "rotCcw%u", i);
+			buttonsObj[jsonShort].set(gPrefsSettings.getUChar(keyShort, Button_GetActionDefault(i, false)));
+			buttonsObj[jsonLong].set(gPrefsSettings.getUChar(keyLong, Button_GetActionDefault(i, true)));
 			buttonsObj[jsonCw].set(Button_GetRotaryAction(i, true));
 			buttonsObj[jsonCcw].set(Button_GetRotaryAction(i, false));
+			enabledArr.add(Button_IsEnabled(i));
 		}
-		buttonsObj["short0"].set(gPrefsSettings.getUChar("btnShort0", BUTTON_0_SHORT));
-		buttonsObj["short1"].set(gPrefsSettings.getUChar("btnShort1", BUTTON_1_SHORT));
-		buttonsObj["short2"].set(gPrefsSettings.getUChar("btnShort2", BUTTON_2_SHORT));
-		buttonsObj["short3"].set(gPrefsSettings.getUChar("btnShort3", BUTTON_3_SHORT));
-		buttonsObj["short4"].set(gPrefsSettings.getUChar("btnShort4", BUTTON_4_SHORT));
-		buttonsObj["short5"].set(gPrefsSettings.getUChar("btnShort5", BUTTON_5_SHORT));
-		buttonsObj["long0"].set(gPrefsSettings.getUChar("btnLong0", BUTTON_0_LONG));
-		buttonsObj["long1"].set(gPrefsSettings.getUChar("btnLong1", BUTTON_1_LONG));
-		buttonsObj["long2"].set(gPrefsSettings.getUChar("btnLong2", BUTTON_2_LONG));
-		buttonsObj["long3"].set(gPrefsSettings.getUChar("btnLong3", BUTTON_3_LONG));
-		buttonsObj["long4"].set(gPrefsSettings.getUChar("btnLong4", BUTTON_4_LONG));
-		buttonsObj["long5"].set(gPrefsSettings.getUChar("btnLong5", BUTTON_5_LONG));
 		buttonsObj["multi01"].set(gPrefsSettings.getUChar("btnMulti01", BUTTON_MULTI_01));
 		buttonsObj["multi02"].set(gPrefsSettings.getUChar("btnMulti02", BUTTON_MULTI_02));
 		buttonsObj["multi03"].set(gPrefsSettings.getUChar("btnMulti03", BUTTON_MULTI_03));
@@ -1501,18 +1495,6 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		}
 #endif
 		JsonObject buttonsSettings = defaultsObj["buttons"].to<JsonObject>();
-		buttonsSettings["short0"].set(BUTTON_0_SHORT);
-		buttonsSettings["short1"].set(BUTTON_1_SHORT);
-		buttonsSettings["short2"].set(BUTTON_2_SHORT);
-		buttonsSettings["short3"].set(BUTTON_3_SHORT);
-		buttonsSettings["short4"].set(BUTTON_4_SHORT);
-		buttonsSettings["short5"].set(BUTTON_5_SHORT);
-		buttonsSettings["long0"].set(BUTTON_0_LONG);
-		buttonsSettings["long1"].set(BUTTON_1_LONG);
-		buttonsSettings["long2"].set(BUTTON_2_LONG);
-		buttonsSettings["long3"].set(BUTTON_3_LONG);
-		buttonsSettings["long4"].set(BUTTON_4_LONG);
-		buttonsSettings["long5"].set(BUTTON_5_LONG);
 		buttonsSettings["multi01"].set(BUTTON_MULTI_01);
 		buttonsSettings["multi02"].set(BUTTON_MULTI_02);
 		buttonsSettings["multi03"].set(BUTTON_MULTI_03);
@@ -1528,10 +1510,14 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		buttonsSettings["multi34"].set(BUTTON_MULTI_34);
 		buttonsSettings["multi35"].set(BUTTON_MULTI_35);
 		buttonsSettings["multi45"].set(BUTTON_MULTI_45);
-		for (uint8_t i = 0; i < 6; i++) { // "hold button + turn encoder" gestures
-			char jsonCw[10], jsonCcw[11];
+		for (uint8_t i = 0; i < BUTTON_COUNT; i++) { // short/long press + "hold button + turn encoder" gestures
+			char jsonShort[10], jsonLong[9], jsonCw[10], jsonCcw[11];
+			snprintf(jsonShort, sizeof(jsonShort), "short%u", i);
+			snprintf(jsonLong, sizeof(jsonLong), "long%u", i);
 			snprintf(jsonCw, sizeof(jsonCw), "rotCw%u", i);
 			snprintf(jsonCcw, sizeof(jsonCcw), "rotCcw%u", i);
+			buttonsSettings[jsonShort].set(Button_GetActionDefault(i, false));
+			buttonsSettings[jsonLong].set(Button_GetActionDefault(i, true));
 			buttonsSettings[jsonCw].set(Button_GetRotaryActionDefault(i, true));
 			buttonsSettings[jsonCcw].set(Button_GetRotaryActionDefault(i, false));
 		}

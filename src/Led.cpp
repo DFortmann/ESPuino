@@ -27,9 +27,6 @@
 	#define LED_VOLUME_INDICATOR_RETURN_DELAY 1000U
 	#define LED_VOLUME_INDICATOR_NUM_CYCLES	  (LED_VOLUME_INDICATOR_RETURN_DELAY / 20)
 
-extern t_button gButtons[7]; // next + prev + pplay + rotEnc + button4 + button5 + dummy-button
-extern uint8_t gShutdownButton;
-
 static std::atomic<uint32_t> Led_Indicators = 0u;
 // Brightness to restore once night mode / ambient light is switched off again. Deliberately two
 // variables: both modes can be active at the same time, and with a single shared slot the one entered

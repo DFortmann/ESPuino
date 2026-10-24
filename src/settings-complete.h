@@ -68,6 +68,26 @@
 	#define ROTARYENCODER_BUTTON			105		// rotary encoder's button
 	#define BUTTON_4						103		// Button 4: unnamed optional button
 	#define BUTTON_5						104		// Button 5: unnamed optional button
+	// Optional additional buttons (set to 99 to disable). Ext. conn1 provides PE109, PE112, IO5 and IO32 for this purpose.
+	// IO32 can also be used for a resistor ladder (ANALOG_BUTTONS_ENABLE) to connect several buttons (channels 120, 121, ...).
+	#ifndef BUTTON_6
+		#define BUTTON_6					99		// Button 6: unnamed optional button
+	#endif
+	#ifndef BUTTON_7
+		#define BUTTON_7					99		// Button 7: unnamed optional button
+	#endif
+	#ifndef BUTTON_8
+		#define BUTTON_8					99		// Button 8: unnamed optional button
+	#endif
+	#ifndef BUTTON_9
+		#define BUTTON_9					99		// Button 9: unnamed optional button
+	#endif
+	#ifndef BUTTON_10
+		#define BUTTON_10					99		// Button 10: unnamed optional button
+	#endif
+	#ifndef BUTTON_11
+		#define BUTTON_11					99		// Button 11: unnamed optional button
+	#endif
 
 	//#define BUTTONS_LED                 	109		// Powers the LEDs of the buttons. (ext.7)
 
@@ -81,6 +101,13 @@
 	#ifdef I2C_2_ENABLE
 		#define ext_IIC_CLK					 4		// i2c-SCL (clock)
 		#define ext_IIC_DATA				13		// i2c-SDA (data)
+	#endif
+
+	// Analog buttons (resistor ladder); levels are configured in settings.h
+	#ifdef ANALOG_BUTTONS_ENABLE
+		#ifndef ANALOG_BUTTONS_PIN
+			#define ANALOG_BUTTONS_PIN		32		// ADC1-GPIO (IO32 at ext. conn1). Don't use together with LPCD (JP1) as it's routed to IO32 as well!
+		#endif
 	#endif
 
 	// Wake-up button => this also is the interrupt-pin if port-expander is enabled!

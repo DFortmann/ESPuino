@@ -84,7 +84,13 @@
 			"button2": "Play/Pause-Taste (Btn2)",
 			"button3": "Drehimpulsgeber-Taste (Btn3)",
 			"button4": "Btn4-Taste",
-			"button5": "Btn5-Taste"
+			"button5": "Btn5-Taste",
+			"button6": "Btn6-Taste",
+			"button7": "Btn7-Taste",
+			"button8": "Btn8-Taste",
+			"button9": "Btn9-Taste",
+			"button10": "Btn10-Taste",
+			"button11": "Btn11-Taste"
 		},
 		"multibuttons": {
 			"title": "Multi-Taster-Zuordnungen",

@@ -84,7 +84,13 @@
 			"button2": "Play/Pause-Button (Btn2)",
 			"button3": "Encoder-Button (Btn3)",
 			"button4": "Btn4-Button",
-			"button5": "Btn5-Button"
+			"button5": "Btn5-Button",
+			"button6": "Btn6-Button",
+			"button7": "Btn7-Button",
+			"button8": "Btn8-Button",
+			"button9": "Btn9-Button",
+			"button10": "Btn10-Button",
+			"button11": "Btn11-Button"
 		},
 		"multibuttons": {
 			"title": "Multi-button assignments",

@@ -46,6 +46,7 @@
 	#define BLUETOOTH_ENABLE                // If enabled and bluetooth-mode is active, you can stream to your ESPuino or to a headset via bluetooth (a2dp-sink & a2dp-source). Note: This feature consumes a lot of resources and the available flash/ram might not be sufficient.
 	//#define IR_CONTROL_ENABLE             // Enables remote control (https://forum.espuino.de/t/neues-feature-fernsteuerung-per-infrarot-fernbedienung/265)
 	//#define HALLEFFECT_SENSOR_ENABLE      // Support for hallsensor. For fine-tuning please adjust HallEffectSensor.h Please note: only user-support provided (https://forum.espuino.de/t/magnetische-hockey-tags/1449/35)
+	//#define ANALOG_BUTTONS_ENABLE         // Several buttons connected via resistor ladder to one ADC-pin (ANALOG_BUTTONS_PIN). Assign them to buttons by using channels 120, 121, ... (see analogButtonsLevelsMv)
 
 	//################## select SD card mode #############################
 	#define SD_MMC_1BIT_MODE              // run SD card in SD-MMC 1Bit mode (using GPIOs 15 + 14 + 2 is mandatory!)
@@ -81,6 +82,9 @@
 		3: ROTARYENCODER_BUTTON
 		4: BUTTON_4
 		5: BUTTON_5
+		6: BUTTON_6
+		...
+		11: BUTTON_11
 
 	Don't forget to enable/configure those buttons you want to use in your develboard-specific config (e.g. settings-custom.h)
 
@@ -105,6 +109,12 @@
 	#define BUTTON_3_SHORT    CMD_MEASUREBATTERY
 	#define BUTTON_4_SHORT    CMD_SEEK_BACKWARDS
 	#define BUTTON_5_SHORT    CMD_SEEK_FORWARDS
+	#define BUTTON_6_SHORT    CMD_NOTHING
+	#define BUTTON_7_SHORT    CMD_NOTHING
+	#define BUTTON_8_SHORT    CMD_NOTHING
+	#define BUTTON_9_SHORT    CMD_NOTHING
+	#define BUTTON_10_SHORT   CMD_NOTHING
+	#define BUTTON_11_SHORT   CMD_NOTHING
 
 	#define BUTTON_0_LONG     CMD_LASTTRACK
 	#define BUTTON_1_LONG     CMD_FIRSTTRACK
@@ -112,6 +122,12 @@
 	#define BUTTON_3_LONG     CMD_SLEEPMODE
 	#define BUTTON_4_LONG     CMD_VOLUMEUP
 	#define BUTTON_5_LONG     CMD_VOLUMEDOWN
+	#define BUTTON_6_LONG     CMD_NOTHING
+	#define BUTTON_7_LONG     CMD_NOTHING
+	#define BUTTON_8_LONG     CMD_NOTHING
+	#define BUTTON_9_LONG     CMD_NOTHING
+	#define BUTTON_10_LONG    CMD_NOTHING
+	#define BUTTON_11_LONG    CMD_NOTHING
 
 	// Rotary gestures: hold the button, turn the encoder. CMD_NOTHING disables the button as a modifier.
 	// A modifier button keeps its normal short/long action when it is pressed *without* turning the encoder.
@@ -127,6 +143,18 @@
 	#define BUTTON_4_ROTARY_CCW  CMD_NOTHING
 	#define BUTTON_5_ROTARY_CW   CMD_NOTHING
 	#define BUTTON_5_ROTARY_CCW  CMD_NOTHING
+	#define BUTTON_6_ROTARY_CW   CMD_NOTHING
+	#define BUTTON_6_ROTARY_CCW  CMD_NOTHING
+	#define BUTTON_7_ROTARY_CW   CMD_NOTHING
+	#define BUTTON_7_ROTARY_CCW  CMD_NOTHING
+	#define BUTTON_8_ROTARY_CW   CMD_NOTHING
+	#define BUTTON_8_ROTARY_CCW  CMD_NOTHING
+	#define BUTTON_9_ROTARY_CW   CMD_NOTHING
+	#define BUTTON_9_ROTARY_CCW  CMD_NOTHING
+	#define BUTTON_10_ROTARY_CW  CMD_NOTHING
+	#define BUTTON_10_ROTARY_CCW CMD_NOTHING
+	#define BUTTON_11_ROTARY_CW  CMD_NOTHING
+	#define BUTTON_11_ROTARY_CCW CMD_NOTHING
 
 	#define BUTTON_MULTI_01   CMD_NOTHING   //CMD_TOGGLE_WIFI_STATUS (disabled now to prevent children from unwanted WiFi-disable)
 	#define BUTTON_MULTI_02   CMD_ENABLE_FTP_SERVER
@@ -160,6 +188,12 @@
 	#define BUTTON_3_ACTIVE_STATE 0
 	#define BUTTON_4_ACTIVE_STATE 0
 	#define BUTTON_5_ACTIVE_STATE 0
+	#define BUTTON_6_ACTIVE_STATE 0
+	#define BUTTON_7_ACTIVE_STATE 0
+	#define BUTTON_8_ACTIVE_STATE 0
+	#define BUTTON_9_ACTIVE_STATE 0
+	#define BUTTON_10_ACTIVE_STATE 0
+	#define BUTTON_11_ACTIVE_STATE 0
 
 	//#define CONTROLS_LOCKED_BY_DEFAULT			// If set the controls are locked at boot
 	#define INCLUDE_ROTARY_IN_CONTROLS_LOCK			// If set the rotary encoder is locked if controls are locked
@@ -201,6 +235,14 @@
 		constexpr float s_warningCriticalVoltage = 2.9;                 // If battery-voltage is <= this value, assume battery near-empty. Whether this triggers a shutdown is a separate GUI-toggle (off by default).
 		constexpr float s_voltageIndicatorLow = 2.9;                    // Lower range for Neopixel-voltage-indication (0 leds) (can be changed via GUI!)
 		constexpr float s_voltageIndicatorHigh = 3.3;                   // Upper range for Neopixel-voltage-indication (all leds) (can be changed via GUI!)
+	#endif
+
+	// (optional) Analog buttons: resistor ladder at ANALOG_BUTTONS_PIN (configured in your develboard-specific config)
+	// Wiring: pullup (10 kOhm) from 3.3 V to the pin; every button connects the pin to GND via its own resistor.
+	// Every resistor results in a specific voltage that identifies the button: U = 3.3 V * R / (R + 10 kOhm)
+	#ifdef ANALOG_BUTTONS_ENABLE
+		constexpr uint16_t analogButtonsLevelsMv[] = {0, 1055, 2270};   // Voltage (mV) per button => channel 120: 0 Ohm, 121: 4.7 kOhm, 122: 22 kOhm (max. 8 buttons)
+		constexpr uint16_t analogButtonsToleranceMv = 300;              // Max. deviation (mV) from the level configured; check serial log (debug) for measured values
 	#endif
 
 	// enable I2C if necessary

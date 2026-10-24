@@ -33,6 +33,18 @@ volatile bool Port_AllowReadFromPortExpander = false;
 	#endif
 #endif
 
+#ifdef ANALOG_BUTTONS_ENABLE
+	#ifndef ANALOG_BUTTONS_PIN
+		#error "ANALOG_BUTTONS_ENABLE requires ANALOG_BUTTONS_PIN to be defined in your develboard-specific config"
+	#endif
+	#if defined(HALLEFFECT_SENSOR_ENABLE) && (HallEffectSensor_PIN == ANALOG_BUTTONS_PIN)
+		#error "ANALOG_BUTTONS_PIN is already used by the hallsensor"
+	#endif
+constexpr uint8_t ANALOG_BUTTON_NONE = 0xFFu;
+static uint8_t Port_AnalogButtonPressed = ANALOG_BUTTON_NONE; // Index of the analog button that is pressed right now
+static void Port_AnalogButtonsHandler(void);
+#endif
+
 void Port_Init(void) {
 #ifdef PORT_EXPANDER_ENABLE
 	Port_Test();
@@ -49,11 +61,20 @@ void Port_Init(void) {
 	Port_AllowReadFromPortExpander = true;
 	Port_ExpanderHandler();
 #endif
+
+#ifdef ANALOG_BUTTONS_ENABLE
+	analogSetPinAttenuation(ANALOG_BUTTONS_PIN, ADC_11db); // Measuring range up to ~3.1 V
+	Port_AnalogButtonsHandler();
+#endif
 }
 
 void Port_Cyclic(void) {
 #ifdef PORT_EXPANDER_ENABLE
 	Port_ExpanderHandler();
+#endif
+
+#ifdef ANALOG_BUTTONS_ENABLE
+	Port_AnalogButtonsHandler();
 #endif
 }
 
@@ -71,6 +92,11 @@ bool Port_Read(const uint8_t _channel) {
 		case 108 ... 115: // Port-expander (port 1)
 			return (Port_ExpanderPortsInputChannelStatus[1] & (1 << (_channel - 108))); // Remove offset 100 + 8 (return false if pressed)
 
+#endif
+
+#ifdef ANALOG_BUTTONS_ENABLE
+		case ANALOG_BUTTONS_FIRST_CHANNEL ... ANALOG_BUTTONS_FIRST_CHANNEL + ANALOG_BUTTONS_MAX - 1: // Analog buttons (resistor ladder)
+			return (Port_AnalogButtonPressed != (_channel - ANALOG_BUTTONS_FIRST_CHANNEL)); // return false if pressed
 #endif
 
 		default: // Everything else (doesn't make sense at all) isn't supposed to be pressed
@@ -410,4 +436,43 @@ void IRAM_ATTR PORT_ExpanderISR(void) {
 	}
 }
 	#endif
+#endif
+
+#ifdef ANALOG_BUTTONS_ENABLE
+// Maps the voltage at ANALOG_BUTTONS_PIN to one of the analog buttons. A button is only taken over once it was
+// detected on two consecutive cycles: the ADC might otherwise sample the edge of a press halfway and report a
+// neighbouring button for a moment. Debouncing of the contacts themselves is done by Button.cpp.
+static void Port_AnalogButtonsHandler(void) {
+	static uint8_t lastCandidate = ANALOG_BUTTON_NONE;
+	static bool unknownLevelLogged = false;
+
+	const int32_t milliVolts = analogReadMilliVolts(ANALOG_BUTTONS_PIN);
+	uint8_t candidate = ANALOG_BUTTON_NONE;
+	bool isIdle = true; // Nothing pressed => pullup pulls the pin above the highest level configured
+	for (uint8_t i = 0; i < Port_NumAnalogButtons; i++) {
+		if (abs(milliVolts - static_cast<int32_t>(analogButtonsLevelsMv[i])) <= analogButtonsToleranceMv) {
+			candidate = i;
+			isIdle = false;
+			break;
+		}
+		if (milliVolts < analogButtonsLevelsMv[i] + analogButtonsToleranceMv) {
+			isIdle = false;
+		}
+	}
+
+	if (candidate == ANALOG_BUTTON_NONE && !isIdle && candidate == lastCandidate && !unknownLevelLogged) {
+		Log_Printf(LOGLEVEL_DEBUG, "Analog buttons: %d mV doesn't match any level configured", milliVolts);
+		unknownLevelLogged = true; // Report only once per press
+	}
+	if (candidate == lastCandidate && candidate != Port_AnalogButtonPressed) {
+		Port_AnalogButtonPressed = candidate;
+		if (candidate != ANALOG_BUTTON_NONE) {
+			Log_Printf(LOGLEVEL_DEBUG, "Analog buttons: channel %u pressed (%d mV)", ANALOG_BUTTONS_FIRST_CHANNEL + candidate, milliVolts);
+		}
+	}
+	if (isIdle) {
+		unknownLevelLogged = false;
+	}
+	lastCandidate = candidate;
+}
 #endif

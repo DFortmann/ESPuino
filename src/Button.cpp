@@ -12,42 +12,150 @@
 
 bool gButtonInitComplete = false;
 
-// Only enable those buttons that are not disabled (99 or >115)
-// 0 -> 39: GPIOs
-// 100 -> 115: Port-expander
-#if (NEXT_BUTTON >= 0 && NEXT_BUTTON <= MAX_GPIO)
-	#define BUTTON_0_ENABLE
-#elif (NEXT_BUTTON >= 100 && NEXT_BUTTON <= 115)
-	#define EXPANDER_0_ENABLE
+// settings-override.h, when present, replaces settings.h wholesale -- so an override written before buttons 6..11
+// existed defines none of their macros. Default them to "not connected" (99) / CMD_NOTHING so those configs keep
+// building and simply don't use the additional buttons.
+#ifndef BUTTON_6
+	#define BUTTON_6 99
 #endif
-#if (PREVIOUS_BUTTON >= 0 && PREVIOUS_BUTTON <= MAX_GPIO)
-	#define BUTTON_1_ENABLE
-#elif (PREVIOUS_BUTTON >= 100 && PREVIOUS_BUTTON <= 115)
-	#define EXPANDER_1_ENABLE
+#ifndef BUTTON_7
+	#define BUTTON_7 99
 #endif
-#if (PAUSEPLAY_BUTTON >= 0 && PAUSEPLAY_BUTTON <= MAX_GPIO)
-	#define BUTTON_2_ENABLE
-#elif (PAUSEPLAY_BUTTON >= 100 && PAUSEPLAY_BUTTON <= 115)
-	#define EXPANDER_2_ENABLE
+#ifndef BUTTON_8
+	#define BUTTON_8 99
 #endif
-#if (ROTARYENCODER_BUTTON >= 0 && ROTARYENCODER_BUTTON <= MAX_GPIO)
-	#define BUTTON_3_ENABLE
-#elif (ROTARYENCODER_BUTTON >= 100 && ROTARYENCODER_BUTTON <= 115)
-	#define EXPANDER_3_ENABLE
+#ifndef BUTTON_9
+	#define BUTTON_9 99
 #endif
-#if (BUTTON_4 >= 0 && BUTTON_4 <= MAX_GPIO)
-	#define BUTTON_4_ENABLE
-#elif (BUTTON_4 >= 100 && BUTTON_4 <= 115)
-	#define EXPANDER_4_ENABLE
+#ifndef BUTTON_10
+	#define BUTTON_10 99
 #endif
-#if (BUTTON_5 >= 0 && BUTTON_5 <= MAX_GPIO)
-	#define BUTTON_5_ENABLE
-#elif (BUTTON_5 >= 100 && BUTTON_5 <= 115)
-	#define EXPANDER_5_ENABLE
+#ifndef BUTTON_11
+	#define BUTTON_11 99
+#endif
+#ifndef BUTTON_6_ACTIVE_STATE
+	#define BUTTON_6_ACTIVE_STATE 0
+#endif
+#ifndef BUTTON_7_ACTIVE_STATE
+	#define BUTTON_7_ACTIVE_STATE 0
+#endif
+#ifndef BUTTON_8_ACTIVE_STATE
+	#define BUTTON_8_ACTIVE_STATE 0
+#endif
+#ifndef BUTTON_9_ACTIVE_STATE
+	#define BUTTON_9_ACTIVE_STATE 0
+#endif
+#ifndef BUTTON_10_ACTIVE_STATE
+	#define BUTTON_10_ACTIVE_STATE 0
+#endif
+#ifndef BUTTON_11_ACTIVE_STATE
+	#define BUTTON_11_ACTIVE_STATE 0
+#endif
+#ifndef BUTTON_6_SHORT
+	#define BUTTON_6_SHORT CMD_NOTHING
+#endif
+#ifndef BUTTON_6_LONG
+	#define BUTTON_6_LONG CMD_NOTHING
+#endif
+#ifndef BUTTON_7_SHORT
+	#define BUTTON_7_SHORT CMD_NOTHING
+#endif
+#ifndef BUTTON_7_LONG
+	#define BUTTON_7_LONG CMD_NOTHING
+#endif
+#ifndef BUTTON_8_SHORT
+	#define BUTTON_8_SHORT CMD_NOTHING
+#endif
+#ifndef BUTTON_8_LONG
+	#define BUTTON_8_LONG CMD_NOTHING
+#endif
+#ifndef BUTTON_9_SHORT
+	#define BUTTON_9_SHORT CMD_NOTHING
+#endif
+#ifndef BUTTON_9_LONG
+	#define BUTTON_9_LONG CMD_NOTHING
+#endif
+#ifndef BUTTON_10_SHORT
+	#define BUTTON_10_SHORT CMD_NOTHING
+#endif
+#ifndef BUTTON_10_LONG
+	#define BUTTON_10_LONG CMD_NOTHING
+#endif
+#ifndef BUTTON_11_SHORT
+	#define BUTTON_11_SHORT CMD_NOTHING
+#endif
+#ifndef BUTTON_11_LONG
+	#define BUTTON_11_LONG CMD_NOTHING
 #endif
 
+// GPIO / port-channel and active state of every button, indexed like gButtons.
+// 0 -> MAX_GPIO: GPIOs
+// 100 -> 115: Port-expander
+// 120 -> 127: Analog buttons (resistor ladder)
+// Everything else (e.g. 99) disables the button.
+static constexpr struct {
+	uint8_t channel;
+	bool activeState;
+} buttonHwConfig[BUTTON_COUNT] = {
+	{		 NEXT_BUTTON,  BUTTON_0_ACTIVE_STATE},
+	{	 PREVIOUS_BUTTON,  BUTTON_1_ACTIVE_STATE},
+	{	 PAUSEPLAY_BUTTON,  BUTTON_2_ACTIVE_STATE},
+	{ROTARYENCODER_BUTTON,  BUTTON_3_ACTIVE_STATE},
+	{			BUTTON_4,  BUTTON_4_ACTIVE_STATE},
+	{			BUTTON_5,  BUTTON_5_ACTIVE_STATE},
+	{			BUTTON_6,  BUTTON_6_ACTIVE_STATE},
+	{			BUTTON_7,  BUTTON_7_ACTIVE_STATE},
+	{			BUTTON_8,  BUTTON_8_ACTIVE_STATE},
+	{			BUTTON_9,  BUTTON_9_ACTIVE_STATE},
+	{		   BUTTON_10, BUTTON_10_ACTIVE_STATE},
+	{		   BUTTON_11, BUTTON_11_ACTIVE_STATE},
+};
+
+// Button command configuration: {prefsKeyShort, prefsKeyLong, defaultShort, defaultLong}
+static const struct {
+	const char *prefsKeyShort;
+	const char *prefsKeyLong;
+	uint8_t defaultShort;
+	uint8_t defaultLong;
+} buttonCmdConfig[BUTTON_COUNT] = {
+	{ "btnShort0",  "btnLong0",  BUTTON_0_SHORT,  BUTTON_0_LONG},
+	{ "btnShort1",  "btnLong1",  BUTTON_1_SHORT,  BUTTON_1_LONG},
+	{ "btnShort2",  "btnLong2",  BUTTON_2_SHORT,  BUTTON_2_LONG},
+	{ "btnShort3",  "btnLong3",  BUTTON_3_SHORT,  BUTTON_3_LONG},
+	{ "btnShort4",  "btnLong4",  BUTTON_4_SHORT,  BUTTON_4_LONG},
+	{ "btnShort5",  "btnLong5",  BUTTON_5_SHORT,  BUTTON_5_LONG},
+	{ "btnShort6",  "btnLong6",  BUTTON_6_SHORT,  BUTTON_6_LONG},
+	{ "btnShort7",  "btnLong7",  BUTTON_7_SHORT,  BUTTON_7_LONG},
+	{ "btnShort8",  "btnLong8",  BUTTON_8_SHORT,  BUTTON_8_LONG},
+	{ "btnShort9",  "btnLong9",  BUTTON_9_SHORT,  BUTTON_9_LONG},
+	{"btnShort10", "btnLong10", BUTTON_10_SHORT, BUTTON_10_LONG},
+	{"btnShort11", "btnLong11", BUTTON_11_SHORT, BUTTON_11_LONG},
+};
+
+static constexpr bool Button_IsValidChannel(uint8_t channel) {
+	return (channel <= MAX_GPIO)
+#ifdef PORT_EXPANDER_ENABLE
+		|| (channel >= 100 && channel <= 115)
+#endif
+#ifdef ANALOG_BUTTONS_ENABLE
+		|| (channel >= ANALOG_BUTTONS_FIRST_CHANNEL && channel < ANALOG_BUTTONS_FIRST_CHANNEL + Port_NumAnalogButtons)
+#endif
+		;
+}
+
+bool Button_IsEnabled(uint8_t buttonIndex) {
+	return (buttonIndex < BUTTON_COUNT) && Button_IsValidChannel(buttonHwConfig[buttonIndex].channel);
+}
+
+uint8_t Button_GetActionDefault(uint8_t buttonIndex, bool longPress) {
+	if (buttonIndex >= BUTTON_COUNT) {
+		return CMD_NOTHING;
+	}
+	return longPress ? buttonCmdConfig[buttonIndex].defaultLong : buttonCmdConfig[buttonIndex].defaultShort;
+}
+
 // Allocate gButtons in PSRAM if available
-EXT_RAM_BSS_ATTR t_button gButtons[7]; // next + prev + pplay + rotEnc + button4 + button5 + dummy-button
+EXT_RAM_BSS_ATTR t_button gButtons[BUTTON_COUNT + 1]; // + dummy-button
 uint8_t gShutdownButton = 99; // Helper used for Neopixel: stores button-number of shutdown-button
 uint16_t gLongPressTime = 0;
 
@@ -69,64 +177,20 @@ void Button_Init() {
 #endif
 
 #ifdef NEOPIXEL_ENABLE // Try to find button that is used for shutdown via longpress-action (only necessary for Neopixel)
-	#if (defined(BUTTON_0_ENABLE) || defined(EXPANDER_0_ENABLE)) && (BUTTON_0_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 0;
-	#elif (defined(BUTTON_1_ENABLE) || defined(EXPANDER_1_ENABLE)) && (BUTTON_1_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 1;
-	#elif (defined(BUTTON_2_ENABLE) || defined(EXPANDER_2_ENABLE)) && (BUTTON_2_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 2;
-	#elif (defined(BUTTON_3_ENABLE) || defined(EXPANDER_3_ENABLE)) && (BUTTON_3_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 3;
-	#elif (defined(BUTTON_4_ENABLE) || defined(EXPANDER_4_ENABLE)) && (BUTTON_4_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 4;
-	#elif (defined(BUTTON_5_ENABLE) || defined(EXPANDER_5_ENABLE)) && (BUTTON_5_LONG == CMD_SLEEPMODE)
-	gShutdownButton = 5;
-	#endif
+	for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
+		if (Button_IsEnabled(i) && (buttonCmdConfig[i].defaultLong == CMD_SLEEPMODE)) {
+			gShutdownButton = i;
+			break;
+		}
+	}
 #endif
 
-// Activate internal pullups for all enabled buttons connected to GPIOs
-#ifdef BUTTON_0_ENABLE
-	if (BUTTON_0_ACTIVE_STATE) {
-		pinMode(NEXT_BUTTON, INPUT);
-	} else {
-		pinMode(NEXT_BUTTON, INPUT_PULLUP);
+	// Activate internal pullups for all enabled buttons connected to GPIOs
+	for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
+		if (Button_IsEnabled(i) && buttonHwConfig[i].channel <= MAX_GPIO) {
+			pinMode(buttonHwConfig[i].channel, buttonHwConfig[i].activeState ? INPUT : INPUT_PULLUP);
+		}
 	}
-#endif
-#ifdef BUTTON_1_ENABLE
-	if (BUTTON_1_ACTIVE_STATE) {
-		pinMode(PREVIOUS_BUTTON, INPUT);
-	} else {
-		pinMode(PREVIOUS_BUTTON, INPUT_PULLUP);
-	}
-#endif
-#ifdef BUTTON_2_ENABLE
-	if (BUTTON_2_ACTIVE_STATE) {
-		pinMode(PAUSEPLAY_BUTTON, INPUT);
-	} else {
-		pinMode(PAUSEPLAY_BUTTON, INPUT_PULLUP);
-	}
-#endif
-#ifdef BUTTON_3_ENABLE
-	if (BUTTON_3_ACTIVE_STATE) {
-		pinMode(ROTARYENCODER_BUTTON, INPUT);
-	} else {
-		pinMode(ROTARYENCODER_BUTTON, INPUT_PULLUP);
-	}
-#endif
-#ifdef BUTTON_4_ENABLE
-	if (BUTTON_4_ACTIVE_STATE) {
-		pinMode(BUTTON_4, INPUT);
-	} else {
-		pinMode(BUTTON_4, INPUT_PULLUP);
-	}
-#endif
-#ifdef BUTTON_5_ENABLE
-	if (BUTTON_5_ACTIVE_STATE) {
-		pinMode(BUTTON_5, INPUT);
-	} else {
-		pinMode(BUTTON_5, INPUT_PULLUP);
-	}
-#endif
 
 	// Create 1000Hz-HW-Timer (currently only used for buttons)
 	Button_TimerSemaphore = xSemaphoreCreateBinary();
@@ -144,24 +208,11 @@ void Button_Init() {
 
 // Read current state of all enabled buttons
 static void Button_ReadAllStates(void) {
-#if defined(BUTTON_0_ENABLE) || defined(EXPANDER_0_ENABLE)
-	gButtons[0].currentState = Port_Read(NEXT_BUTTON) ^ BUTTON_0_ACTIVE_STATE;
-#endif
-#if defined(BUTTON_1_ENABLE) || defined(EXPANDER_1_ENABLE)
-	gButtons[1].currentState = Port_Read(PREVIOUS_BUTTON) ^ BUTTON_1_ACTIVE_STATE;
-#endif
-#if defined(BUTTON_2_ENABLE) || defined(EXPANDER_2_ENABLE)
-	gButtons[2].currentState = Port_Read(PAUSEPLAY_BUTTON) ^ BUTTON_2_ACTIVE_STATE;
-#endif
-#if defined(BUTTON_3_ENABLE) || defined(EXPANDER_3_ENABLE)
-	gButtons[3].currentState = Port_Read(ROTARYENCODER_BUTTON) ^ BUTTON_3_ACTIVE_STATE;
-#endif
-#if defined(BUTTON_4_ENABLE) || defined(EXPANDER_4_ENABLE)
-	gButtons[4].currentState = Port_Read(BUTTON_4) ^ BUTTON_4_ACTIVE_STATE;
-#endif
-#if defined(BUTTON_5_ENABLE) || defined(EXPANDER_5_ENABLE)
-	gButtons[5].currentState = Port_Read(BUTTON_5) ^ BUTTON_5_ACTIVE_STATE;
-#endif
+	for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
+		if (Button_IsEnabled(i)) {
+			gButtons[i].currentState = Port_Read(buttonHwConfig[i].channel) ^ buttonHwConfig[i].activeState;
+		}
+	}
 }
 
 // Update press/release state for a single button with debouncing
@@ -194,7 +245,7 @@ void Button_Cyclic() {
 
 	unsigned long currentTimestamp = millis();
 
-#ifdef PORT_EXPANDER_ENABLE
+#if defined(PORT_EXPANDER_ENABLE) || defined(ANALOG_BUTTONS_ENABLE)
 	Port_Cyclic();
 #endif
 
@@ -251,21 +302,6 @@ static bool Button_HandleMultiButtonPress(void) {
 	}
 	return false;
 }
-
-// Button command configuration: {prefsKeyShort, prefsKeyLong, defaultShort, defaultLong}
-static const struct {
-	const char *prefsKeyShort;
-	const char *prefsKeyLong;
-	uint8_t defaultShort;
-	uint8_t defaultLong;
-} buttonCmdConfig[] = {
-	{"btnShort0", "btnLong0", BUTTON_0_SHORT, BUTTON_0_LONG},
-	{"btnShort1", "btnLong1", BUTTON_1_SHORT, BUTTON_1_LONG},
-	{"btnShort2", "btnLong2", BUTTON_2_SHORT, BUTTON_2_LONG},
-	{"btnShort3", "btnLong3", BUTTON_3_SHORT, BUTTON_3_LONG},
-	{"btnShort4", "btnLong4", BUTTON_4_SHORT, BUTTON_4_LONG},
-	{"btnShort5", "btnLong5", BUTTON_5_SHORT, BUTTON_5_LONG},
-};
 
 // Handle a single button's short/long press action
 static void Button_HandleSinglePress(uint8_t i, unsigned long currentTimestamp) {
@@ -373,6 +409,42 @@ static void Button_HandleSinglePress(uint8_t i, unsigned long currentTimestamp) 
 #ifndef BUTTON_5_ROTARY_CCW
 	#define BUTTON_5_ROTARY_CCW CMD_NOTHING
 #endif
+#ifndef BUTTON_6_ROTARY_CW
+	#define BUTTON_6_ROTARY_CW CMD_NOTHING
+#endif
+#ifndef BUTTON_6_ROTARY_CCW
+	#define BUTTON_6_ROTARY_CCW CMD_NOTHING
+#endif
+#ifndef BUTTON_7_ROTARY_CW
+	#define BUTTON_7_ROTARY_CW CMD_NOTHING
+#endif
+#ifndef BUTTON_7_ROTARY_CCW
+	#define BUTTON_7_ROTARY_CCW CMD_NOTHING
+#endif
+#ifndef BUTTON_8_ROTARY_CW
+	#define BUTTON_8_ROTARY_CW CMD_NOTHING
+#endif
+#ifndef BUTTON_8_ROTARY_CCW
+	#define BUTTON_8_ROTARY_CCW CMD_NOTHING
+#endif
+#ifndef BUTTON_9_ROTARY_CW
+	#define BUTTON_9_ROTARY_CW CMD_NOTHING
+#endif
+#ifndef BUTTON_9_ROTARY_CCW
+	#define BUTTON_9_ROTARY_CCW CMD_NOTHING
+#endif
+#ifndef BUTTON_10_ROTARY_CW
+	#define BUTTON_10_ROTARY_CW CMD_NOTHING
+#endif
+#ifndef BUTTON_10_ROTARY_CCW
+	#define BUTTON_10_ROTARY_CCW CMD_NOTHING
+#endif
+#ifndef BUTTON_11_ROTARY_CW
+	#define BUTTON_11_ROTARY_CW CMD_NOTHING
+#endif
+#ifndef BUTTON_11_ROTARY_CCW
+	#define BUTTON_11_ROTARY_CCW CMD_NOTHING
+#endif
 
 // "Hold this button, turn the encoder" -- one action per rotation direction, per button.
 // Mirrors buttonCmdConfig: compile-time default in settings.h, overridable at runtime via NVS.
@@ -381,13 +453,19 @@ static const struct {
 	const char *prefsKeyCcw;
 	uint8_t defaultCw;
 	uint8_t defaultCcw;
-} rotaryCmdConfig[] = {
-	{"btnRotCw0", "btnRotCcw0", BUTTON_0_ROTARY_CW, BUTTON_0_ROTARY_CCW},
-	{"btnRotCw1", "btnRotCcw1", BUTTON_1_ROTARY_CW, BUTTON_1_ROTARY_CCW},
-	{"btnRotCw2", "btnRotCcw2", BUTTON_2_ROTARY_CW, BUTTON_2_ROTARY_CCW},
-	{"btnRotCw3", "btnRotCcw3", BUTTON_3_ROTARY_CW, BUTTON_3_ROTARY_CCW},
-	{"btnRotCw4", "btnRotCcw4", BUTTON_4_ROTARY_CW, BUTTON_4_ROTARY_CCW},
-	{"btnRotCw5", "btnRotCcw5", BUTTON_5_ROTARY_CW, BUTTON_5_ROTARY_CCW},
+} rotaryCmdConfig[BUTTON_COUNT] = {
+	{ "btnRotCw0",  "btnRotCcw0",	BUTTON_0_ROTARY_CW,	BUTTON_0_ROTARY_CCW},
+	{ "btnRotCw1",  "btnRotCcw1",	BUTTON_1_ROTARY_CW,	BUTTON_1_ROTARY_CCW},
+	{ "btnRotCw2",  "btnRotCcw2",	BUTTON_2_ROTARY_CW,	BUTTON_2_ROTARY_CCW},
+	{ "btnRotCw3",  "btnRotCcw3",	BUTTON_3_ROTARY_CW,	BUTTON_3_ROTARY_CCW},
+	{ "btnRotCw4",  "btnRotCcw4",	BUTTON_4_ROTARY_CW,	BUTTON_4_ROTARY_CCW},
+	{ "btnRotCw5",  "btnRotCcw5",	BUTTON_5_ROTARY_CW,	BUTTON_5_ROTARY_CCW},
+	{ "btnRotCw6",  "btnRotCcw6",	BUTTON_6_ROTARY_CW,	BUTTON_6_ROTARY_CCW},
+	{ "btnRotCw7",  "btnRotCcw7",	BUTTON_7_ROTARY_CW,	BUTTON_7_ROTARY_CCW},
+	{ "btnRotCw8",  "btnRotCcw8",	BUTTON_8_ROTARY_CW,	BUTTON_8_ROTARY_CCW},
+	{ "btnRotCw9",  "btnRotCcw9",	BUTTON_9_ROTARY_CW,	BUTTON_9_ROTARY_CCW},
+	{"btnRotCw10", "btnRotCcw10", BUTTON_10_ROTARY_CW, BUTTON_10_ROTARY_CCW},
+	{"btnRotCw11", "btnRotCcw11", BUTTON_11_ROTARY_CW, BUTTON_11_ROTARY_CCW},
 };
 
 uint8_t Button_GetRotaryAction(uint8_t buttonIndex, bool clockwise) {
@@ -417,8 +495,8 @@ uint8_t Button_GetHeldModifier(void) {
 		return BUTTON_NONE; // gButtons[] is still garbage before the first scan
 	}
 	for (uint8_t i = 0; i < (sizeof(rotaryCmdConfig) / sizeof(rotaryCmdConfig[0])); i++) {
-		if (gButtons[i].currentState) {
-			continue; // not pressed
+		if (!Button_IsEnabled(i) || gButtons[i].currentState) {
+			continue; // not connected or not pressed
 		}
 		if (Button_GetRotaryAction(i, true) != CMD_NOTHING || Button_GetRotaryAction(i, false) != CMD_NOTHING) {
 			return i;
@@ -440,7 +518,7 @@ void Button_DoButtonActions(void) {
 	}
 
 	unsigned long currentTimestamp = millis();
-	for (uint8_t i = 0; i < 7; i++) {
+	for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
 		if (gButtons[i].isPressed) {
 			Button_HandleSinglePress(i, currentTimestamp);
 		}

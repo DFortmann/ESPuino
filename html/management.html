@@ -1884,6 +1884,36 @@
 											<td><select id="cmdselect_short_5" class="form-control form-select"></select></td>
 											<td><select id="cmdselect_long_5" class="form-control form-select"></select></td>
 										</tr>
+										<tr data-button="6" style="display:none">
+											<td data-i18n="settingsex.buttons.button6"></td>
+											<td><select id="cmdselect_short_6" class="form-control form-select"></select></td>
+											<td><select id="cmdselect_long_6" class="form-control form-select"></select></td>
+										</tr>
+										<tr data-button="7" style="display:none">
+											<td data-i18n="settingsex.buttons.button7"></td>
+											<td><select id="cmdselect_short_7" class="form-control form-select"></select></td>
+											<td><select id="cmdselect_long_7" class="form-control form-select"></select></td>
+										</tr>
+										<tr data-button="8" style="display:none">
+											<td data-i18n="settingsex.buttons.button8"></td>
+											<td><select id="cmdselect_short_8" class="form-control form-select"></select></td>
+											<td><select id="cmdselect_long_8" class="form-control form-select"></select></td>
+										</tr>
+										<tr data-button="9" style="display:none">
+											<td data-i18n="settingsex.buttons.button9"></td>
+											<td><select id="cmdselect_short_9" class="form-control form-select"></select></td>
+											<td><select id="cmdselect_long_9" class="form-control form-select"></select></td>
+										</tr>
+										<tr data-button="10" style="display:none">
+											<td data-i18n="settingsex.buttons.button10"></td>
+											<td><select id="cmdselect_short_10" class="form-control form-select"></select></td>
+											<td><select id="cmdselect_long_10" class="form-control form-select"></select></td>
+										</tr>
+										<tr data-button="11" style="display:none">
+											<td data-i18n="settingsex.buttons.button11"></td>
+											<td><select id="cmdselect_short_11" class="form-control form-select"></select></td>
+											<td><select id="cmdselect_long_11" class="form-control form-select"></select></td>
+										</tr>
 									</tbody>
 								</table>
 							</div>
@@ -1935,6 +1965,36 @@
 												<td data-i18n="settingsex.buttons.button5"></td>
 												<td><select id="cmdselect_rotccw_5" class="form-control form-select"></select></td>
 												<td><select id="cmdselect_rotcw_5" class="form-control form-select"></select></td>
+											</tr>
+											<tr data-button="6" style="display:none">
+												<td data-i18n="settingsex.buttons.button6"></td>
+												<td><select id="cmdselect_rotccw_6" class="form-control form-select"></select></td>
+												<td><select id="cmdselect_rotcw_6" class="form-control form-select"></select></td>
+											</tr>
+											<tr data-button="7" style="display:none">
+												<td data-i18n="settingsex.buttons.button7"></td>
+												<td><select id="cmdselect_rotccw_7" class="form-control form-select"></select></td>
+												<td><select id="cmdselect_rotcw_7" class="form-control form-select"></select></td>
+											</tr>
+											<tr data-button="8" style="display:none">
+												<td data-i18n="settingsex.buttons.button8"></td>
+												<td><select id="cmdselect_rotccw_8" class="form-control form-select"></select></td>
+												<td><select id="cmdselect_rotcw_8" class="form-control form-select"></select></td>
+											</tr>
+											<tr data-button="9" style="display:none">
+												<td data-i18n="settingsex.buttons.button9"></td>
+												<td><select id="cmdselect_rotccw_9" class="form-control form-select"></select></td>
+												<td><select id="cmdselect_rotcw_9" class="form-control form-select"></select></td>
+											</tr>
+											<tr data-button="10" style="display:none">
+												<td data-i18n="settingsex.buttons.button10"></td>
+												<td><select id="cmdselect_rotccw_10" class="form-control form-select"></select></td>
+												<td><select id="cmdselect_rotcw_10" class="form-control form-select"></select></td>
+											</tr>
+											<tr data-button="11" style="display:none">
+												<td data-i18n="settingsex.buttons.button11"></td>
+												<td><select id="cmdselect_rotccw_11" class="form-control form-select"></select></td>
+												<td><select id="cmdselect_rotcw_11" class="form-control form-select"></select></td>
 											</tr>
 										</tbody>
 									</table>
@@ -4132,6 +4192,7 @@
 			});
 		} /* buildFileSystemTree */
 		/* File Explorer functions end */
+		const BUTTON_COUNT = 12; // has to match BUTTON_COUNT in Button.h
 		var socket = undefined;
 		var tm;
 		var pingInterval;
@@ -4728,30 +4789,19 @@
 			// buttons
 			let buttonSettings = settings.buttons;
 			if (buttonSettings) {
-				document.getElementById("cmdselect_short_0").value = buttonSettings.short0;
-				document.getElementById("cmdselect_short_1").value = buttonSettings.short1;
-				document.getElementById("cmdselect_short_2").value = buttonSettings.short2;
-				document.getElementById("cmdselect_short_3").value = buttonSettings.short3;
-				document.getElementById("cmdselect_short_4").value = buttonSettings.short4;
-				document.getElementById("cmdselect_short_5").value = buttonSettings.short5;
-				document.getElementById("cmdselect_long_0").value = buttonSettings.long0;
-				document.getElementById("cmdselect_long_1").value = buttonSettings.long1;
-				document.getElementById("cmdselect_long_2").value = buttonSettings.long2;
-				document.getElementById("cmdselect_long_3").value = buttonSettings.long3;
-				document.getElementById("cmdselect_long_4").value = buttonSettings.long4;
-				document.getElementById("cmdselect_long_5").value = buttonSettings.long5;
-				document.getElementById("cmdselect_rotcw_0").value = buttonSettings.rotCw0;
-				document.getElementById("cmdselect_rotcw_1").value = buttonSettings.rotCw1;
-				document.getElementById("cmdselect_rotcw_2").value = buttonSettings.rotCw2;
-				document.getElementById("cmdselect_rotcw_3").value = buttonSettings.rotCw3;
-				document.getElementById("cmdselect_rotcw_4").value = buttonSettings.rotCw4;
-				document.getElementById("cmdselect_rotcw_5").value = buttonSettings.rotCw5;
-				document.getElementById("cmdselect_rotccw_0").value = buttonSettings.rotCcw0;
-				document.getElementById("cmdselect_rotccw_1").value = buttonSettings.rotCcw1;
-				document.getElementById("cmdselect_rotccw_2").value = buttonSettings.rotCcw2;
-				document.getElementById("cmdselect_rotccw_3").value = buttonSettings.rotCcw3;
-				document.getElementById("cmdselect_rotccw_4").value = buttonSettings.rotCcw4;
-				document.getElementById("cmdselect_rotccw_5").value = buttonSettings.rotCcw5;
+				for (let i = 0; i < BUTTON_COUNT; i++) {
+					for (const [type, key] of [["short", "short"], ["long", "long"], ["rotcw", "rotCw"], ["rotccw", "rotCcw"]]) {
+						if (buttonSettings[key + i] !== undefined) {
+							document.getElementById("cmdselect_" + type + "_" + i).value = buttonSettings[key + i];
+						}
+					}
+				}
+				/* additional buttons are only shown if they're connected */
+				if (Array.isArray(buttonSettings.enabled)) {
+					document.querySelectorAll("tr[data-button]").forEach(row => {
+						row.style.display = buttonSettings.enabled[Number(row.dataset.button)] ? "" : "none";
+					});
+				}
 				document.getElementById("cmdselect_multi_01").value = buttonSettings.multi01;
 				document.getElementById("cmdselect_multi_02").value = buttonSettings.multi02;
 				document.getElementById("cmdselect_multi_03").value = buttonSettings.multi03;
@@ -5339,30 +5389,6 @@
 					recDepth: Number($('#playlistRecDepth').val()),
 				},
 				"buttons": {
-					short0: Number(document.getElementById("cmdselect_short_0").value),
-					short1: Number(document.getElementById("cmdselect_short_1").value),
-					short2: Number(document.getElementById("cmdselect_short_2").value),
-					short3: Number(document.getElementById("cmdselect_short_3").value),
-					short4: Number(document.getElementById("cmdselect_short_4").value),
-					short5: Number(document.getElementById("cmdselect_short_5").value),
-					long0: Number(document.getElementById("cmdselect_long_0").value),
-					long1: Number(document.getElementById("cmdselect_long_1").value),
-					long2: Number(document.getElementById("cmdselect_long_2").value),
-					long3: Number(document.getElementById("cmdselect_long_3").value),
-					long4: Number(document.getElementById("cmdselect_long_4").value),
-					long5: Number(document.getElementById("cmdselect_long_5").value),
-					rotCw0: Number(document.getElementById("cmdselect_rotcw_0").value),
-					rotCw1: Number(document.getElementById("cmdselect_rotcw_1").value),
-					rotCw2: Number(document.getElementById("cmdselect_rotcw_2").value),
-					rotCw3: Number(document.getElementById("cmdselect_rotcw_3").value),
-					rotCw4: Number(document.getElementById("cmdselect_rotcw_4").value),
-					rotCw5: Number(document.getElementById("cmdselect_rotcw_5").value),
-					rotCcw0: Number(document.getElementById("cmdselect_rotccw_0").value),
-					rotCcw1: Number(document.getElementById("cmdselect_rotccw_1").value),
-					rotCcw2: Number(document.getElementById("cmdselect_rotccw_2").value),
-					rotCcw3: Number(document.getElementById("cmdselect_rotccw_3").value),
-					rotCcw4: Number(document.getElementById("cmdselect_rotccw_4").value),
-					rotCcw5: Number(document.getElementById("cmdselect_rotccw_5").value),
 					multi01: Number(document.getElementById("cmdselect_multi_01").value),
 					multi02: Number(document.getElementById("cmdselect_multi_02").value),
 					multi03: Number(document.getElementById("cmdselect_multi_03").value),
@@ -5391,6 +5417,13 @@
 				if (element) {
 					myObj.led.controlColors.push(hexColorToInt(element.value));
 				}
+			}
+			// fill button commands (short/long press + "hold button + turn encoder" gestures)
+			for (let i = 0; i < BUTTON_COUNT; i++) {
+				myObj.buttons["short" + i] = Number(document.getElementById("cmdselect_short_" + i).value);
+				myObj.buttons["long" + i] = Number(document.getElementById("cmdselect_long_" + i).value);
+				myObj.buttons["rotCw" + i] = Number(document.getElementById("cmdselect_rotcw_" + i).value);
+				myObj.buttons["rotCcw" + i] = Number(document.getElementById("cmdselect_rotccw_" + i).value);
 			}
 			console.log(myObj);
 			var myJSON = JSON.stringify(myObj);

@@ -84,7 +84,13 @@
 			"button2": "Bouton Play/Pause (Btn2)",
 			"button3": "Bouton Codeur rotatif (Btn3)",
 			"button4": "Bouton Btn4",
-			"button5": "Bouton Btn5"
+			"button5": "Bouton Btn5",
+			"button6": "Bouton Btn6",
+			"button7": "Bouton Btn7",
+			"button8": "Bouton Btn8",
+			"button9": "Bouton Btn9",
+			"button10": "Bouton Btn10",
+			"button11": "Bouton Btn11"
 		},
 		"multibuttons": {
 			"title": "Affectation des boutons multiples",
