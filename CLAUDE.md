@@ -57,6 +57,9 @@ Encoder: CLK = GPIO34, DT = GPIO39. Die Pins 6–11 und `ANALOG_BUTTONS_ENABLE` 
 ```
 
 - Lötbrücke **JP1 darf nicht gesetzt sein** (sonst liegt der PN5180-IRQ für LPCD auf IO32).
+- LPCD (Aufwecken per Karte) ist deshalb gesperrt: `Rfid_LpcdAvailable` in `src/Rfid.h` ist false, wenn
+  `ANALOG_BUTTONS_PIN == RFID_IRQ`; die Firmware ignoriert dann die NVS-Einstellung, die Web-UI blendet den Schalter aus.
+  Grund: Im Tiefschlaf ist „3,3 V switched“ aus, IO32 läge auf 0 V und würde die Box sofort wieder wecken.
 - Spannungsstufen/Toleranz: `analogButtonsLevelsMv` / `analogButtonsToleranceMv` (300 mV) in `src/settings.h`.
 - Serielles Log (Debug) meldet „Analog buttons: channel 12x pressed (… mV)“ bzw. unpassende Spannungen → zum Kalibrieren.
 - Einschränkungen: Leiter-Taster können nicht aus dem Deepsleep wecken und nicht gleichzeitig gedrückt werden.

@@ -98,7 +98,7 @@ static void RfidPn5180_Task(void *parameter);
 uint8_t stateMachine = RFID_PN5180_STATE_INIT;
 
 static bool Rfid_Pn5180LpcdEnabled(void) {
-	return gPrefsRfid.getBool("pn5180Lpcd", false);
+	return Rfid_LpcdAvailable && gPrefsRfid.getBool("pn5180Lpcd", false);
 }
 
 void Rfid_EnableLpcd(void);

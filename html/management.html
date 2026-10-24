@@ -1752,7 +1752,7 @@
 										<div class="form-control-plaintext" id="pn5180FirmwareValue">—</div>
 									</div>
 								</div>
-								<div class="row mb-2 align-items-center">
+								<div class="row mb-2 align-items-center" id="pn5180LpcdRow">
 									<div class="col-sm-4 d-flex align-items-center gap-2">
 										<label for="pn5180Lpcd" class="col-form-label" data-i18n="general.rfid.pn5180Lpcd"></label>
 										<a class="link-secondary" data-bs-toggle="popover"
@@ -4709,6 +4709,8 @@
 				$('#volumeCurve').prop('checked', genSettings.volumeCurve > 0);
 				$('#rfidReaderType').val(genSettings.rfidReaderType);
 				$('#pn5180Lpcd').prop('checked', genSettings.pn5180Lpcd);
+				/* LPCD isn't available if its IRQ-pin is used by the analog buttons */
+				$('#pn5180LpcdRow').toggle(genSettings.pn5180LpcdAvailable !== false);
 				$('#mfrc522Gain').val(genSettings.mfrc522Gain);
 				$('#mfrc522ScanInterval').val(genSettings.mfrc522ScanInterval);
 				$('#pn5180Debounce').val(genSettings.pn5180Debounce);

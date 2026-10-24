@@ -802,7 +802,7 @@ WebsocketCodeType JSONToSettings(JsonObject doc) {
 		success = success && (gPrefsSettings.putBool("recoverVolBoot", generalObj["recoverVolBoot"].as<bool>()) != 0);
 		success = success && (gPrefsSettings.putUChar("volumeCurve", generalObj["volumeCurve"].as<uint8_t>()) != 0);
 		success = success && (gPrefsRfid.putUChar("rfidReaderType", generalObj["rfidReaderType"].as<uint8_t>()) != 0);
-		success = success && (gPrefsRfid.putBool("pn5180Lpcd", generalObj["pn5180Lpcd"].as<bool>()) != 0);
+		success = success && (gPrefsRfid.putBool("pn5180Lpcd", Rfid_LpcdAvailable && generalObj["pn5180Lpcd"].as<bool>()) != 0);
 		success = success && (gPrefsRfid.putUChar("mfrc522Gain", generalObj["mfrc522Gain"].as<uint8_t>()) != 0);
 		success = success && (gPrefsRfid.putUShort("rfidScanIntv", generalObj["mfrc522ScanInterval"].as<uint16_t>()) != 0);
 		success = success && (gPrefsRfid.putUShort("pn5180Debounce", generalObj["pn5180Debounce"].as<uint16_t>()) != 0);
@@ -1282,7 +1282,8 @@ static void settingsToJSON(JsonObject obj, const String section) {
 		generalObj["dontAcceptRfidTwice"].set(gPrefsSettings.getBool("dAccRfidTwice", false)); // DONT_ACCEPT_SAME_RFID_TWICE
 		generalObj["resumeOnSameRfid"].set(gPrefsSettings.getBool("p2pSameRfid", false)); // RESUME_ON_SAME_RFID
 		generalObj["rfidReaderType"].set(gPrefsRfid.getUChar("rfidReaderType", 0)); // RFID_READER_TYPE_RUNTIME
-		generalObj["pn5180Lpcd"].set(gPrefsRfid.getBool("pn5180Lpcd", false)); // PN5180 LPCD
+		generalObj["pn5180Lpcd"].set(Rfid_LpcdAvailable && gPrefsRfid.getBool("pn5180Lpcd", false)); // PN5180 LPCD
+		generalObj["pn5180LpcdAvailable"].set(Rfid_LpcdAvailable); // false if RFID_IRQ is used by the analog buttons
 		generalObj["mfrc522Gain"].set(gPrefsRfid.getUChar("mfrc522Gain", 7)); // MFRC522_GAIN
 		generalObj["mfrc522ScanInterval"].set(gPrefsRfid.getUShort("rfidScanIntv", 100)); // RFID_SCAN_INTERVAL
 		generalObj["pn5180Debounce"].set(gPrefsRfid.getUShort("pn5180Debounce", 500)); // PN5180 debounce (ms)

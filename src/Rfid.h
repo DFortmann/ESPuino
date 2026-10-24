@@ -5,6 +5,15 @@ constexpr uint8_t cardIdStringSize = (cardIdSize * 3u) + 1u;
 
 extern char gCurrentRfidTagId[cardIdStringSize];
 
+// PN5180's LPCD wakes ESPuino from deep sleep via RFID_IRQ. If the analog buttons' resistor ladder uses the same pin,
+// LPCD can't work: the ladder's pullup is powered by the switched 3.3 V, so the pin is low in deep sleep and would
+// wake ESPuino again immediately. LPCD is ignored in that case, whatever is stored in NVS.
+#if defined(ANALOG_BUTTONS_ENABLE) && defined(ANALOG_BUTTONS_PIN) && defined(RFID_IRQ) && (ANALOG_BUTTONS_PIN == RFID_IRQ)
+constexpr bool Rfid_LpcdAvailable = false;
+#else
+constexpr bool Rfid_LpcdAvailable = true;
+#endif
+
 void Rfid_ResetOldRfid(void);
 void Rfid_ResetLastTag(void);
 // Reader-task internal: returns true once after Rfid_ResetLastTag() was called.

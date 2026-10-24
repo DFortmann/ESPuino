@@ -46,7 +46,8 @@ Limitations compared to digital buttons:
 
 Ext. conn1 provides `IO32` (default `ANALOG_BUTTONS_PIN`), `IO5`, `PE109`, `PE112` and
 "3.3 V switched". IO32 is also used by the PN5180's IRQ if LPCD is enabled via JP1 — don't
-combine both. Example configuration via `platformio-override.ini`:
+combine both. If `ANALOG_BUTTONS_PIN` equals `RFID_IRQ`, the firmware ignores the LPCD setting
+and the web-UI hides it (the pin would be low in deepsleep and wake ESPuino right away). Example configuration via `platformio-override.ini`:
 
 ```ini
 [env:complete-11buttons]

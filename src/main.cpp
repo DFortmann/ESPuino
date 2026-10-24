@@ -120,7 +120,7 @@ void setup() {
 	Button_Init(); // To preseed internal button-storage with values
 
 	System_Init_Rfid_Prefs();
-	const bool pn5180LpcdEnabled = gPrefsRfid.getBool("pn5180Lpcd", false);
+	const bool pn5180LpcdEnabled = Rfid_LpcdAvailable && gPrefsRfid.getBool("pn5180Lpcd", false);
 	if (pn5180LpcdEnabled) {
 		// Only handle a possible deep-sleep wakeup here; starting the RFID scanning task
 		// this early raced with the peripheral init below and could hang the boot (see
