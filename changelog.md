@@ -2,6 +2,8 @@
 
 ## DEV-branch
 
+* 26.10.2026: Two more virtual RFID cards: `CMD_VIRTUAL_RFID_CARD_11` and `_12` (`900000000011`, `900000000012`), so that every one of the up to 12 buttons can start its own playlist.
+
 * 24.10.2026: Up to 12 buttons instead of 6: `BUTTON_6` ... `BUTTON_11` can be connected to GPIOs or the port-expander like the existing ones, and their short and long press as well as "hold button + turn encoder" gestures are assigned in the web interface, which only lists the additional buttons that are actually connected. New option `ANALOG_BUTTONS_ENABLE` connects up to 8 buttons to a single ADC-pin via a resistor ladder (channels 120 ... 127); on the ESPuino complete that's IO32 at ext. conn1, which together with PE109, PE112 and IO5 makes room for eleven buttons plus the rotary encoder. Wiring and configuration: `docs/analog-buttons.md`.
 
 * 24.10.2026: Passwords are no longer handed out. The log no longer prints the MQTT and FTP passwords, and `/settings`, `/wificonfig` and the settings sent over the websocket only say whether an MQTT, FTP or access-point password is stored (`passwordSet`, `apPasswordSet`). In the web interface these fields stay empty, and leaving one empty keeps the stored password; a switch removes the MQTT or access-point password. A stored MQTT password only stays with the server and user it was entered for: anyone on the network could otherwise point the box at a broker of their own and read the password at the next connect. `/wificonfig` now keeps every field a request leaves out, which also lets the access-point setup page save the hostname - it used to be rejected there. Reported in [#466](https://github.com/biologist79/ESPuino/issues/466).

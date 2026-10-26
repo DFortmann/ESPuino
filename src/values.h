@@ -90,6 +90,8 @@
 #define CMD_VIRTUAL_RFID_CARD_08 248 // Command: Virtual RFID-Card 900000000008
 #define CMD_VIRTUAL_RFID_CARD_09 249 // Command: Virtual RFID-Card 900000000009
 #define CMD_VIRTUAL_RFID_CARD_10 250 // Command: Virtual RFID-Card 900000000010
+#define CMD_VIRTUAL_RFID_CARD_11 251 // Command: Virtual RFID-Card 900000000011
+#define CMD_VIRTUAL_RFID_CARD_12 252 // Command: Virtual RFID-Card 900000000012
 
 // Seek step sizes (seconds). These are internal defaults only: they seed the matching
 // web-interface settings before their first save and are read from NVS afterwards.
@@ -132,6 +134,8 @@
 #define VIRTUAL_RFID_CARD_08 "900000000008"
 #define VIRTUAL_RFID_CARD_09 "900000000009"
 #define VIRTUAL_RFID_CARD_10 "900000000010"
+#define VIRTUAL_RFID_CARD_11 "900000000011"
+#define VIRTUAL_RFID_CARD_12 "900000000012"
 
 // Debug
 #define PRINT_TASK_STATS 199 // Prints task stats for debugging, needs CONFIG_FREERTOS_USE_TRACE_FACILITY=y and CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y in sdkconfig.defaults

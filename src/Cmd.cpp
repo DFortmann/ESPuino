@@ -463,6 +463,16 @@ void Cmd_Action(const uint16_t mod) {
 			break;
 		}
 
+		case CMD_VIRTUAL_RFID_CARD_11: {
+			xQueueSend(gRfidCardQueue, VIRTUAL_RFID_CARD_11, 0);
+			break;
+		}
+
+		case CMD_VIRTUAL_RFID_CARD_12: {
+			xQueueSend(gRfidCardQueue, VIRTUAL_RFID_CARD_12, 0);
+			break;
+		}
+
 		case PRINT_TASK_STATS: {
 			System_esp_print_tasks();
 			break;

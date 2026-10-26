@@ -110,6 +110,6 @@ Noch offen:
 2. Firmware flashen, im seriellen Log prüfen, ob die drei Leiter-Taster richtig erkannt werden; ggf.
    `analogButtonsLevelsMv` anpassen.
 3. Aktionen im Webinterface zuordnen (Einstellungen → Taster-Zuordnungen). Bestimmte Ordner/Hörbücher per
-   „Virtuelle RFID-Karte 1–10“ (IDs `900000000001`…) auf Taster legen. Den Schlafmodus-Taster auf einen der
+   „Virtuelle RFID-Karte 1–12“ (IDs `900000000001`…`900000000012`; 11 und 12 sind eigene Ergänzung) auf Taster legen. Den Schlafmodus-Taster auf einen der
    5 Haupt-Buttons legen (die können wecken).
 4. Nichts davon ist bisher auf echter Hardware getestet.
