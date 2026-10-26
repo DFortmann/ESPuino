@@ -216,7 +216,8 @@ static void Button_ReadAllStates(void) {
 }
 
 // Update press/release state for a single button with debouncing
-static void Button_UpdateState(t_button &btn, unsigned long currentTimestamp) {
+static void Button_UpdateState(uint8_t i, unsigned long currentTimestamp) {
+	t_button &btn = gButtons[i];
 	bool const stateChanged = btn.currentState != btn.lastState;
 	bool const debounceElapsed = currentTimestamp - btn.lastPressedTimestamp > buttonDebounceInterval;
 
@@ -225,6 +226,10 @@ static void Button_UpdateState(t_button &btn, unsigned long currentTimestamp) {
 		if (buttonPressed) {
 			btn.isPressed = true;
 			btn.lastPressedTimestamp = currentTimestamp;
+			// Tells which button sits on which connector when wiring a case full of them
+			if (i < BUTTON_COUNT) {
+				Log_Printf(LOGLEVEL_DEBUG, "Button %u pressed (channel %u)", i, buttonHwConfig[i].channel);
+			}
 			if (!btn.firstPressedTimestamp) {
 				btn.firstPressedTimestamp = currentTimestamp;
 			}
@@ -256,7 +261,7 @@ void Button_Cyclic() {
 	Button_ReadAllStates();
 
 	for (uint8_t i = 0; i < sizeof(gButtons) / sizeof(gButtons[0]); i++) {
-		Button_UpdateState(gButtons[i], currentTimestamp);
+		Button_UpdateState(i, currentTimestamp);
 	}
 
 	gButtonInitComplete = true;
