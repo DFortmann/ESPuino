@@ -15,6 +15,22 @@
   I²C-Anschluss (Variante C) wurde verworfen. Hinweis an David: I²C ist ein Bus, ein zweiter Expander hätte den
   Anschluss nicht blockiert; er hat sich trotzdem bewusst für A entschieden.
 
+### Akku und Lötbrücken (Stand 28.10.2026)
+
+- Akku: **Eremit IFR32700 LiFePO4, 3,2 V, 6 Ah, 19,2 Wh (ERE-G03)**, mit eingebauter Schutzschaltung.
+- Lötbrücken für LiFePO4 (von David geprüft bzw. korrigiert):
+  - **JP5 offen** (Ladespannung 3,6 V). War ab Werk auf „LiPo“ gesetzt → Ladung auf 4,2 V, Zelle bis ca. 3,75 V
+    überladen, dann hat die Schutzschaltung im Pack getrennt (Lade-LED blinkte schnell). Akku danach unauffällig
+    (Ruhespannung 3,44 V, nicht warm).
+  - **JP6 auf 1+2** (LFP-Spannungswächter, Abschaltung ca. 2,75 V). War auf 2+3 (LiPo, ca. 3,15 V) → Box ging
+    anfangs ohne USB gar nicht an.
+- Erste Ladung nach der Korrektur: LED aus bei 3,65 V, also richtig.
+- Lade-LED (TP5000): dauerhaft an = lädt, aus = voll oder kein USB, schnell blinkend = kein Akku erkannt bzw.
+  Schutzschaltung im Pack hat getrennt.
+- Noch offen: Ruhespannung nach einigen Tagen ohne Benutzung nachmessen (Selbstentladung, ca. 3,35–3,45 V erwartet).
+- Einbau: Akku festlegen und gegen den Lautsprecherkorb isolieren; Abstand zur WLAN-Antenne des ESP32 (ca. 1,5 cm)
+  und zur RFID-Antenne halten.
+
 ## Git
 
 - Fork: https://github.com/DFortmann/ESPuino, lokal in `/Users/david/Documents/EspUino`
