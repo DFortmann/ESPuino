@@ -18,7 +18,16 @@ uint8_t batteryCheckInterval = s_batteryCheckInterval;
 static bool batteryWarnAnnounced = false;
 
 void Battery_Init(void) {
-	analogSetPinAttenuation(VOLTAGE_READ_PIN, inputAttenuation);
+	// Only on the first call (boot), not again when the web UI saves the battery settings. With Arduino 3.x
+	// analogReadMilliVolts() converts with a per-ADC-unit calibration made for the global attenuation (11 dB);
+	// the per-pin attenuation only changes the hardware channel. At boot the pin isn't an ADC channel yet, so
+	// this call has no effect and channel and calibration match. Calling it later would switch the channel to
+	// inputAttenuation while the calibration stays at 11 dB, and the voltage would read about three times too high.
+	static bool attenuationSet = false;
+	if (!attenuationSet) {
+		analogSetPinAttenuation(VOLTAGE_READ_PIN, inputAttenuation);
+		attenuationSet = true;
+	}
 	uint32_t vInterval = gPrefsSettings.getUInt("vCheckIntv", 17777);
 	if (vInterval != 17777) {
 		batteryCheckInterval = vInterval;
